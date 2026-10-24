@@ -187,6 +187,7 @@ class SetupActivity : AppCompatActivity() {
         val enabled = OuiWatchlist.getEnabledPresets(this).toMutableSet()
         listOf(
             "global" to "Global - body cams (Axon, Zepcam, WatchGuard...), Flock, ShotSpotter, traffic cameras, radios",
+            "australia" to "Australia - Redflex/Jenoptik speed cameras, Axon body cams (NSW/AFP/VIC Police), Motorola APX radios, toll road ALPR",
             "canada" to "Canada - adds Cyberkar in-car systems, Getac body cams, Genetec plate readers",
             "us" to "United States",
             "france" to "France - Motorola VB400 body cams of the Police nationale and Gendarmerie, Zepcam, TETRAPOL radios",

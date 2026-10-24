@@ -207,6 +207,7 @@
             <TextView android:id="@+id/presetLabel" style="@style/SettingsLabel" android:text="Watchlist presets" />
 
             <CheckBox android:id="@+id/presetGlobal" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Global" />
+            <CheckBox android:id="@+id/presetAustralia" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Australia" />
             <CheckBox android:id="@+id/presetCanada" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Canada" />
             <CheckBox android:id="@+id/presetUs" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="United States" />
             <CheckBox android:id="@+id/presetFrance" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="France" />

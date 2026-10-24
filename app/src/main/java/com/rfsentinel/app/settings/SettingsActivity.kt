@@ -35,6 +35,7 @@ class SettingsActivity : AppCompatActivity() {
         private const val PRESETS_INFO = "Adds lists of equipment known to be used by police in that region. The built-in detection " +
             "(body cams, Flock, drones, trackers, glasses) works everywhere.\n\n" +
             "Global: body cams (Axon, Zepcam, WatchGuard...), Flock, ShotSpotter, traffic cameras, radios.\n" +
+            "Australia: Redflex/Jenoptik speed cameras, Axon body cams (NSW/AFP/VIC Police), Motorola APX radios, toll road ALPR.\n" +
             "Canada: adds Cyberkar in-car systems, Getac body cams, Genetec plate readers.\n" +
             "France: Motorola VB400 body cams of the Police nationale and Gendarmerie, Zepcam, TETRAPOL radios.\n" +
             "United Kingdom: Motorola and Axon body cams, Sepura / Motorola Airwave radios, Jenoptik ANPR cameras.\n" +
@@ -2128,6 +2129,7 @@ class SettingsActivity : AppCompatActivity() {
         }
         val enabledPresets = OuiWatchlist.getEnabledPresets(this)
         binding.presetGlobal.isChecked = "global" in enabledPresets
+        binding.presetAustralia.isChecked = "australia" in enabledPresets
         binding.presetCanada.isChecked = "canada" in enabledPresets
         binding.presetUs.isChecked = "us" in enabledPresets
         binding.presetFrance.isChecked = "france" in enabledPresets
@@ -2465,6 +2467,7 @@ class SettingsActivity : AppCompatActivity() {
         }
         val presets = mutableSetOf<String>()
         if (binding.presetGlobal.isChecked) presets.add("global")
+        if (binding.presetAustralia.isChecked) presets.add("australia")
         if (binding.presetCanada.isChecked) presets.add("canada")
         if (binding.presetUs.isChecked) presets.add("us")
         if (binding.presetFrance.isChecked) presets.add("france")
