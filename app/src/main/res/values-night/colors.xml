@@ -1,0 +1,7 @@
+<resources>
+    <color name="brand_highlight">#4DD0C4</color>
+    <color name="brand_on_highlight">#00201D</color>
+    <color name="scope">#80CBC4</color>
+    <color name="scope_text">#AAB2DFDB</color>
+    <color name="trace">#FF8A5B</color>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
+    <item
+        android:id="@+id/action_mute"
+        android:icon="@drawable/ic_car_volume"
+        android:title="Mute alerts"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Settings"
+        app:showAsAction="always" />
+    <item android:id="@+id/action_waze_now" android:title="Check Waze now" app:showAsAction="never" />
+    <item android:id="@+id/action_waze_status" android:title="Waze status" app:showAsAction="never" />
+    <!-- Everything the app remembers, in one place. -->
+    <item android:id="@+id/action_history_menu" android:title="History" app:showAsAction="never">
+        <menu>
+            <item android:id="@+id/action_device_history" android:title="Device history" />
+            <item android:id="@+id/action_match_log" android:title="Match history" />
+            <item android:id="@+id/action_traces" android:title="Recorded traces" />
+            <item android:id="@+id/action_snapshots" android:title="Snapshots" />
+            <item android:id="@+id/action_history" android:title="History map &amp; timeline" />
+            <item android:id="@+id/action_probes" android:title="Requested networks" />
+        </menu>
+    </item>
+
+    <!-- The device list as it is now, kept to look at later (History > Snapshots). -->
+    <item android:id="@+id/action_save_snapshot" android:title="Save snapshot" app:showAsAction="never" />
+    <item android:id="@+id/action_export" android:title="Export..." app:showAsAction="never" />
+</menu>
