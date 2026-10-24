@@ -40,8 +40,11 @@ import org.maplibre.android.style.layers.PropertyValue
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
 
-/** [MapEngine] on MapLibre with OpenFreeMap's vector maps (free, no account, no key). */
-internal class MapLibreEngine(private val context: Context) : MapEngine {
+/**
+ * [MapEngine] on MapLibre with OpenFreeMap's vector maps (free, no account, no key), or with
+ * NSW SIX Maps' raster tiles when [provider] is one of those.
+ */
+internal class MapLibreEngine(private val context: Context, override val provider: MapEngine.Provider = MapEngine.Provider.OPENFREEMAP) : MapEngine {
 
     companion object {
         /** OpenFreeMap: OpenStreetMap vector tiles, free, no account, no key, no cookies. */
@@ -49,6 +52,44 @@ internal class MapLibreEngine(private val context: Context) : MapEngine {
         /** A navy night map (like Waze's), lifted further in [nightTweaks]: OpenFreeMap's "dark" is near black. */
         const val DARK_STYLE = "https://tiles.openfreemap.org/styles/fiord"
         const val CREDIT = "© OpenFreeMap © OpenMapTiles © OpenStreetMap contributors"
+        /** OpenFreeMap's label fonts, which the SIX Maps styles borrow (raster tiles bring none). */
+        const val GLYPHS = "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf"
+        /**
+         * NSW Spatial Services' SIX Maps: public ArcGIS tile services in Web Mercator (free, no key, CC BY 4.0).
+         * Service name and deepest zoom level it serves (MapLibre scales the last one up beyond that).
+         */
+        private val SIX = mapOf(
+            MapEngine.Provider.SIX_IMAGERY to ("NSW_Imagery" to 23),
+            MapEngine.Provider.SIX_BASE to ("NSW_Base_Map" to 21),
+            MapEngine.Provider.SIX_TOPO to ("NSW_Topo_Map" to 21)
+        )
+        const val SIX_CREDIT = "© NSW Spatial Services (DCS) - SIX Maps"
+        fun sixTiles(service: String) = "https://maps.six.nsw.gov.au/arcgis/rest/services/public/$service/MapServer/tile/{z}/{y}/{x}"
+
+        /**
+         * A map style of one SIX Maps raster layer. At night the white street and topographic maps are
+         * dimmed well down and the photos a little, so the dots and labels drawn over them stand out.
+         */
+        internal fun sixStyle(provider: MapEngine.Provider, dark: Boolean): String {
+            val (service, maxZoom) = SIX.getValue(provider)
+            val brightness = if (!dark) 1.0 else if (provider == MapEngine.Provider.SIX_IMAGERY) 0.75 else 0.55
+            return JSONObject()
+                .put("version", 8)
+                .put("name", service)
+                .put("glyphs", GLYPHS)
+                .put("sources", JSONObject().put("six", JSONObject()
+                    .put("type", "raster")
+                    .put("tiles", JSONArray().put(sixTiles(service)))
+                    .put("tileSize", 256)
+                    .put("maxzoom", maxZoom)
+                    .put("attribution", SIX_CREDIT)))
+                .put("layers", JSONArray()
+                    .put(JSONObject().put("id", "background").put("type", "background")
+                        .put("paint", JSONObject().put("background-color", if (dark) "#1C2436" else "#E8EAED")))
+                    .put(JSONObject().put("id", "six").put("type", "raster").put("source", "six")
+                        .put("paint", JSONObject().put("raster-brightness-max", brightness))))
+                .toString()
+        }
         private const val BUILDINGS = "rf-buildings-3d"
         /** A clear picture, for the puck layers that must show nothing. */
         private const val BLANK = "rf-puck-blank"
@@ -72,8 +113,7 @@ internal class MapLibreEngine(private val context: Context) : MapEngine {
         }
     }
 
-    override val provider = MapEngine.Provider.OPENFREEMAP
-    override val credit = CREDIT
+    override val credit = if (provider.isSix) SIX_CREDIT else CREDIT
     override val labelFont = listOf("Noto Sans Regular")
 
     init { start(context) }
@@ -126,8 +166,10 @@ internal class MapLibreEngine(private val context: Context) : MapEngine {
 
     override fun setStyle(dark: Boolean, loaded: (Boolean) -> Unit) {
         val m = map ?: return
-        m.setStyle(Style.Builder().fromUri(if (dark) DARK_STYLE else LIGHT_STYLE)) { style ->
-            if (dark) runCatching { nightTweaks(style) }
+        val builder = if (provider.isSix) Style.Builder().fromJson(sixStyle(provider, dark))
+            else Style.Builder().fromUri(if (dark) DARK_STYLE else LIGHT_STYLE)
+        m.setStyle(builder) { style ->
+            if (dark && !provider.isSix) runCatching { nightTweaks(style) }
             addMarkerImage(style)
             loaded(true)
         }

@@ -45,8 +45,19 @@ object AlprStore {
     private val listType = object : TypeToken<List<KnownCamera>>() {}.type
     private val areaListType = object : TypeToken<List<CameraArea>>() {}.type
 
+    /** The cameras downloaded from OpenStreetMap / DeFlock: what the cache file holds. */
+    @Volatile private var downloaded: List<KnownCamera> = emptyList()
+    /** The cameras shipped with the app ([BundledCameras]), read with the cache. */
+    @Volatile private var bundled: List<KnownCamera> = emptyList()
+    /** Every known camera: the downloaded ones and the bundled ones they haven't got. */
     @Volatile var cameras: List<KnownCamera> = emptyList()
         private set
+
+    private fun setDownloaded(list: List<KnownCamera>) {
+        downloaded = list
+        cameras = BundledCameras.merge(list, bundled)
+    }
+
     /** Areas already downloaded, so the map doesn't fetch them again. */
     @Volatile var areas: List<CameraArea> = emptyList()
         private set
@@ -75,7 +86,8 @@ object AlprStore {
             if (loaded) return
             val start = android.os.SystemClock.elapsedRealtime()
             // Streamed from the file: the US + Canada plate readers are megabytes, too big to read into one string first.
-            cameras = runCatching { readJson<List<KnownCamera>>(file(context), listType) }.getOrNull().orEmpty()
+            bundled = runCatching { BundledCameras.load { context.assets.open(it) } }.getOrNull().orEmpty()
+            setDownloaded(runCatching { readJson<List<KnownCamera>>(file(context), listType) }.getOrNull().orEmpty())
             areas = runCatching { readJson<List<CameraArea>>(areasFile(context), areaListType) }.getOrNull().orEmpty()
             loaded = true
             android.util.Log.i("AlprStore", "Loaded ${cameras.size} cameras in ${android.os.SystemClock.elapsedRealtime() - start} ms")
@@ -204,9 +216,9 @@ object AlprStore {
             val found = KnownCameras.parse(json)
             synchronized(this@AlprStore) {
                 val inBox = { c: KnownCamera -> c.lat in south..north && c.lon in west..east }
-                val merged = cameras.filterNot(inBox) + found
+                val merged = downloaded.filterNot(inBox) + found
                 file(context).writeText(gson.toJson(merged))
-                cameras = merged
+                setDownloaded(merged)
                 val now = System.currentTimeMillis()
                 val area = CameraArea(south, west, north, east, now)
                 // Long-stale areas only cost space (their cameras stay cached for offline warnings).
@@ -318,9 +330,9 @@ object AlprStore {
     fun mergePlateReaders(context: Context, boxes: List<DoubleArray>, found: List<KnownCamera>) {
         synchronized(this) {
             load(context)
-            val merged = mergeCameras(cameras, boxes, found)
+            val merged = mergeCameras(downloaded, boxes, found)
             file(context).writeText(gson.toJson(merged))
-            cameras = merged
+            setDownloaded(merged)
         }
     }
 
@@ -349,9 +361,9 @@ object AlprStore {
         return current.filterNot { it.osmId in ids } + found
     }
 
-    /** Tests only: set the cache without files or network. */
+    /** Tests only: set the cache without files or network (and no bundled cameras). */
     @androidx.annotation.VisibleForTesting
-    fun setForTest(list: List<KnownCamera>) { cameras = list; loaded = true }
+    fun setForTest(list: List<KnownCamera>) { bundled = emptyList(); setDownloaded(list); loaded = true }
 
     // Synchronized with the merges, so a save that was mid-write can't bring cameras back.
     @Synchronized
@@ -359,7 +371,7 @@ object AlprStore {
         file(context).delete()
         areasFile(context).delete()
         com.rfsentinel.app.util.Prefs.setDeflockUpdated(context, 0L)
-        cameras = emptyList()
+        setDownloaded(emptyList()) // the bundled cameras stay
         areas = emptyList()
         loaded = true
     }

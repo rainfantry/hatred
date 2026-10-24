@@ -544,11 +544,14 @@ class SettingsActivity : AppCompatActivity() {
                 "parked it stays where you put it. The speedometer's card turns red while you are over the posted limit.\n\n" +
                 "Default zoom: how close the map follows you. The 3D driving view pulls back from it as you speed up; the " +
                 "north-up and heading-up views sit half a level wider. 17 is close to Waze.\n\n" +
-                "Map provider: OpenFreeMap (OpenStreetMap data, free, no account) or Mapbox (Mapbox's own map: 3D buildings, " +
-                "day and night light). Mapbox loads its map from Mapbox's servers, which see the area you look at, like any " +
-                "online map; its usage statistics are switched off. The floating mini map always uses OpenFreeMap."),
+                "Map provider: OpenFreeMap (OpenStreetMap data, free, no account), NSW SIX Maps (the NSW Government's aerial " +
+                "imagery, street or topographic map; New South Wales only) or Mapbox (Mapbox's own map: 3D buildings, " +
+                "day and night light). Each loads its map from its own servers, which see the area you look at, like any " +
+                "online map; Mapbox's usage statistics are switched off. The floating mini map always uses OpenFreeMap."),
         Section("cameras", binding.headerCameras, binding.sectionCameras,
             "Plate-reader and speed / red-light camera positions come from OpenStreetMap.\n\n" +
+                "New South Wales: Transport for NSW's fixed and red-light speed cameras are built in (open data, CC BY), so they " +
+                "warn with nothing downloaded; where OpenStreetMap has the same camera, its copy is used.\n\n" +
                 "Download automatically: fetches the cameras of the map area you look at (the Overpass server sees that area, like map tiles).\n\n" +
                 "Download around me: saves the cameras within the radius for offline use. Larger areas take longer and use more data.\n\n" +
                 "US & Canada: every plate reader in DeFlock's hourly OpenStreetMap snapshot " +
@@ -558,7 +561,7 @@ class SettingsActivity : AppCompatActivity() {
                 "Everything within the download radius around you is fetched in the background; they show from city zoom, with a " +
                 "shaded area where their direction is mapped when you zoom in close. Most are wired, so the scan can't detect them. " +
                 "Public ones by default; private outdoor and indoor ones on request. Map only, no alerts.\n\n" +
-                "Delete downloaded cameras: removes the saved plate, speed, red-light and CCTV cameras (they download again as you use the map)."),
+                "Delete downloaded cameras: removes the saved plate, speed, red-light and CCTV cameras (they download again as you use the map); the built-in NSW cameras stay."),
         Section("cell", binding.headerCell, binding.sectionCell,
             "Tower change alerts are frequent while driving; most useful when parked.\n\n" +
                 "Turning off \"Allow 2G\" (Android 12+) is the strongest protection against fake towers: " +
@@ -826,7 +829,7 @@ class SettingsActivity : AppCompatActivity() {
         info(binding.followSwitch, "Warns when a tracker or flagged device keeps moving with you, for at least the time and distance below - whether it stays in range or keeps turning up again: heard at 3 or more places along your way within 2 hours.")
         withUnit(binding.followMinutesInput, "min")
         withUnit(binding.followMetersInput, "m")
-        info(binding.mapProviderLabel, "OpenFreeMap: free and open, OpenStreetMap data.\n\nMapbox: Mapbox's Standard map with 3D buildings and day / night light.\n\nThe floating mini map and the Android Auto map always use OpenStreetMap maps.")
+        info(binding.mapProviderLabel, "OpenFreeMap: free and open, OpenStreetMap data.\n\nNSW SIX Maps: the NSW Government's own aerial photos, street map or topographic map (Spatial Services, CC BY). Only New South Wales is covered - elsewhere the map is blank, so switch back. Labels and dots are drawn over the tiles as usual.\n\nMapbox: Mapbox's Standard map with 3D buildings and day / night light.\n\nThe floating mini map and the Android Auto map always use OpenStreetMap maps.")
         info(binding.mapAutoRecenterSwitch, "While you drive, the map goes back to your position a few seconds after you stop touching it.")
         info(binding.mapSpeedometerSwitch, "Your speed and the posted limit in a corner of the map; your speed turns red over the limit.")
         info(binding.mapSpeedLimitLiveSwitch, "Shows the posted limit with no destination too, by asking the route server (Valhalla, OpenStreetMap data) about the road you're on. Your position is sent to it.")
@@ -1520,11 +1523,7 @@ class SettingsActivity : AppCompatActivity() {
         fun show() { btn.text = com.rfsentinel.app.ui.MapEngine.chosen(this).label.substringBefore(" (") + "  ▾" }
         show()
         btn.setOnClickListener {
-            val all = com.rfsentinel.app.ui.MapEngine.Provider.entries
-            if (!com.rfsentinel.app.ui.MapEngine.mapboxAvailable) {
-                Toast.makeText(this, "Mapbox isn't available in this build", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            val all = com.rfsentinel.app.ui.MapEngine.available
             val current = all.indexOf(com.rfsentinel.app.ui.MapEngine.chosen(this))
             MaterialAlertDialogBuilder(this)
                 .setTitle("Map provider")

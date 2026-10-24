@@ -17,14 +17,15 @@ object AboutDialog {
             ABSOLUTELY NO WARRANTY. Source code: github.com/CIS-C0/RFSentinel<br/><br/>
             Passive, receive-only Bluetooth LE and WiFi scanner. It never transmits to,
             connects to, jams or spoofs any device. Scans, detections, history and traces stay
-            on this phone. Internet is used only for map data: the map (OpenFreeMap${if (MapEngine.mapboxAvailable) ", or Mapbox if you choose it in Settings" else ""}),
+            on this phone. Internet is used only for map data: the map (OpenFreeMap, or NSW SIX Maps${if (MapEngine.mapboxAvailable) " or Mapbox" else ""} if you choose it in Settings),
             the road tiles of your area while the Waze "only ahead"
             option is on, and the list of known plate, speed and red-light cameras for the area you look at on
             screen; and, when you search for a destination or start a route (on the phone or in Android
             Auto), the place search (Photon, and Nominatim for a search you submit), places of one kind near you or ahead on your route (the same
             OpenStreetMap servers as the cameras) and the route (Valhalla, on the OpenStreetMap Germany server).
             Those servers see your IP and that area or trip, never your scans or detections.
-            Map data &copy; OpenStreetMap contributors (ODbL), &copy; OpenMapTiles; map engine
+            Map data &copy; OpenStreetMap contributors (ODbL), &copy; OpenMapTiles; NSW SIX Maps &copy; NSW Spatial Services (CC BY 4.0);
+            built-in NSW speed and red-light cameras &copy; Transport for NSW (CC BY 4.0); map engine
             MapLibre Native (BSD-2-Clause), OpenFreeMap${if (MapEngine.mapboxAvailable) "; Mapbox Maps SDK (Mapbox terms) when selected" else ""}.<br/><br/>
 
             <b>What a match means</b><br/>

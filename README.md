@@ -408,8 +408,9 @@ Your position, recorded traces, the devices heard around you and the known camer
   navigation app. The sun / moon button switches the map between light and dark, the gear
   opens the map settings. **Settings → Map** sets the **default zoom** (17 is close to Waze;
   the 3D view pulls back from it as you speed up), the **3D view angle** (30° to 60°) and the
-  **map provider**: OpenFreeMap (free, no account) or Mapbox. The floating mini map always
-  uses OpenFreeMap.
+  **map provider**: OpenFreeMap (free, no account), NSW SIX Maps (the NSW Government's own
+  aerial imagery, street or topographic map - New South Wales only, blank elsewhere) or Mapbox.
+  The floating mini map always uses OpenFreeMap.
 - **Cell towers** (Settings → *Map* → *Show cell towers*): towers seen while scanning,
   at the spot where your phone heard them strongest - an estimate, not the
   tower's real position (looking that up online would reveal where you are).
@@ -417,7 +418,9 @@ Your position, recorded traces, the devices heard around you and the known camer
   within your radius (10-200 km, 100 by default); *US & Canada plate cameras* fetches every
   plate reader mapped in the US and Canada (~18 MB, refreshed weekly on WiFi).
   Both use [DeFlock](https://deflock.org)'s hourly snapshot of OpenStreetMap,
-  plus cameras it leaves out, straight from OpenStreetMap. Where the direction is mapped,
+  plus cameras it leaves out, straight from OpenStreetMap. **New South Wales:** Transport for
+  NSW's fixed and red-light speed cameras (open data, CC BY) are built into the app, so they warn
+  with nothing downloaded; where OpenStreetMap has the same camera its copy is used. Where the direction is mapped,
   a cone in the camera's colour shows which way it faces when you zoom in, and a camera
   facing across your way (watching a cross street) doesn't warn. Tap a camera →
   *Ignore alerts* to never be warned about it again, or *Set direction* when its
@@ -907,8 +910,8 @@ Your own themes sit under the built-in ones: **Create a custom theme**, long-pre
 <summary><b>Network use: which servers see what</b></summary>
 
 - **Network use is limited to map data:** the map (vector tiles, styles and fonts from
-  OpenFreeMap, OpenStreetMap data; or from Mapbox if you choose it in Settings → Map,
-  with Mapbox's own usage statistics switched off) while the map is open, the road tiles
+  OpenFreeMap, OpenStreetMap data; or NSW SIX Maps' tiles from maps.six.nsw.gov.au, or Mapbox,
+  if you choose one in Settings → Map, with Mapbox's own usage statistics switched off) while the map is open, the road tiles
   of your area and direction while *Only alert for reports ahead* is on (OpenFreeMap,
   kept on the phone), and the known-camera list for the area you look at, fetched once per
   area and refreshed weekly from overpass-api.de (or the mirrors

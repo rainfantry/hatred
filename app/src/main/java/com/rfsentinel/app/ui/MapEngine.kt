@@ -20,7 +20,14 @@ internal interface MapEngine {
 
     enum class Provider(val key: String, val label: String) {
         OPENFREEMAP("openfreemap", "OpenFreeMap (OpenStreetMap, free, no account)"),
+        /** NSW Spatial Services' SIX Maps: the state's own aerial photos, street and topographic maps (free, no account). */
+        SIX_IMAGERY("six_imagery", "NSW SIX Maps aerial imagery (NSW Government, free, no account)"),
+        SIX_BASE("six_base", "NSW SIX Maps street map (NSW Government, free, no account)"),
+        SIX_TOPO("six_topo", "NSW SIX Maps topographic (NSW Government, free, no account)"),
         MAPBOX("mapbox", "Mapbox");
+
+        /** One of the SIX Maps tile services (drawn by [MapLibreEngine] as raster tiles). */
+        val isSix get() = this == SIX_IMAGERY || this == SIX_BASE || this == SIX_TOPO
 
         companion object {
             fun parse(key: String?) = entries.firstOrNull { it.key == key } ?: OPENFREEMAP
@@ -119,12 +126,15 @@ internal interface MapEngine {
         /** Mapbox needs the full build (the FOSS build leaves its SDK out) and a token in local.properties. */
         val mapboxAvailable get() = MapboxSupport.INCLUDED && BuildConfig.MAPBOX_TOKEN.isNotEmpty()
 
+        /** The providers this build can offer (Mapbox only with its SDK and a token). */
+        val available: List<Provider> get() = Provider.entries.filter { it != Provider.MAPBOX || mapboxAvailable }
+
         fun chosen(context: Context): Provider =
             Provider.parse(Prefs.mapProvider(context)).takeIf { it != Provider.MAPBOX || mapboxAvailable } ?: Provider.OPENFREEMAP
 
         fun create(context: Context, provider: Provider = chosen(context)): MapEngine = when (provider) {
             Provider.MAPBOX -> MapboxSupport.engine(context)
-            Provider.OPENFREEMAP -> MapLibreEngine(context)
+            else -> MapLibreEngine(context, provider)
         }
     }
 }
