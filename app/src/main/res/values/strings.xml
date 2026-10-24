@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">RF Sentinel</string>
-    <string name="tile_label">RF Sentinel</string>
+    <string name="app_name">ARGUS</string>
+    <string name="tile_label">ARGUS</string>
     <string name="tile_scanning">Scanning</string>
     <string name="tile_idle">Idle</string>
     <string name="widget_description">Scanner status with a start / stop button</string>
