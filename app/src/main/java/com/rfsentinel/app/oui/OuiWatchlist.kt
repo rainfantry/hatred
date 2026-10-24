@@ -60,7 +60,7 @@ object OuiWatchlist {
     private var state = State(emptyMap(), emptyList(), emptyList(), emptyList(), emptyMap(), emptyMap(), emptyMap(), emptyList())
 
     /** Load order: regional presets after "global", so their labels win for shared prefixes. */
-    val availablePresets = listOf("global", "canada", "us", "france", "uk", "portugal", "germany", "spain", "italy")
+    val availablePresets = listOf("global", "australia", "canada", "us", "france", "uk", "portugal", "germany", "spain", "italy")
 
     /** Regions where Flock isn't deployed: their presets turn the weak Flock clues off (FlockNoise). */
     private val NON_FLOCK_REGIONS = setOf("france", "uk", "portugal", "germany", "spain", "italy")
